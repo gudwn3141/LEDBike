@@ -11,14 +11,12 @@ conn = mysql.connector.connect(user="raspberrypi", password="raspberrypi",
                              host="raspberrydb.cvlmaax7vr80.ap-northeast-2.rds.amazonaws.com",
                              database="raspberrypi", port=3306)
 
-cursor = conn.cursor()
-# query = "SELECT name FROM user"
-# cursor.execute(query)
-#
+cursor = conn.cursor(buffered=True)
+query = "SELECT name FROM user"
+cursor.execute(query)
+
 # for name in cursor:
 #     print("name : {}".format(name))
-
-    
 
 MQTT_SERVER = "test.mosquitto.org"
 MQTT_PATH = "hoo/#"
@@ -31,11 +29,13 @@ def on_connect(client, userdata, flags, rc):
     
 def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload))
+
+    ## 2018.05.22(화)
+    ## 평균속도 INSERT in DB
     if (msg.topic == "hoo/speed"):
-        sql = ("INSERT INTO speedtest "
-               "(speed)"
-               "VALUES (3)")
-        cursor.execute(sql, msg)
+        val_speed = float(str(msg.payload.decode("utf-8")))
+        print("speed : ", val_speed)
+        cursor.execute("""INSERT INTO speedtest (speed) VALUES (%f)""" % val_speed)
         conn.commit()
 
 # conn.close()
