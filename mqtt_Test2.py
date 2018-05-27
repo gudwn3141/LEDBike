@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+#######################
+##     MQTT Client   ##
+#######################
 
 from __future__ import print_function
 import paho.mqtt.client as mqtt
@@ -40,7 +43,7 @@ def on_message(client, userdata, msg):
 
 # conn.close()
 
-client = mqtt.Client()
+client = mqtt.Client(transport="websockets")
 client.on_connect = on_connect
 client.on_message = on_message
 
